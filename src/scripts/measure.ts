@@ -1,4 +1,5 @@
 import { fs, chalk, sleep } from 'zx';
+import waitPort from 'wait-port';
 import { getFrameworks } from '../helpers/get-frameworks.js';
 import {
   DEFAULT_RUNS,
@@ -34,8 +35,9 @@ const results: Record<string, SimpleReport> = {};
 if (PARALLEL) {
   await Promise.all(frameworks.map(measure));
 } else {
-  for (const framework of frameworks) {
-    await measure(framework);
+  for (let index = 0; index < frameworks.length; index++) {
+    const framework = frameworks[index];
+    await measure(framework, index);
   }
 }
 
@@ -44,23 +46,31 @@ await teardownBrowser();
 console.info(chalk.green('Done!'));
 console.table(getTable(results));
 
-async function measure(framework: string) {
-  const { process: runningProcess, port } = await preview(framework);
-  // Give the server a sec to start up
-  await sleep(2000);
-
-  const measureUrl = `http://localhost:${port}${path}`;
-  console.info(
-    `Getting lighthouse report for ${chalk.green(framework)} on ${measureUrl}`
-  );
-
-  const { report } = await getLighthouseReport(measureUrl, RUNS);
-  results[framework] = getSimpleReport(report);
-
+async function measure(framework: string, i: number) {
   const outputDir = 'apps/components/src/reports';
   const pathFragment = path === '/' ? '/' : path + '/';
   const jsonPath = `${outputDir}${pathFragment}${framework}.json`;
   const jsPath = `${outputDir}${pathFragment}${framework}.ts`;
+
+  if (fs.existsSync(jsPath) && fs.existsSync(jsonPath)) {
+    return;
+  }
+
+  const { process: runningProcess, port } = await preview(framework);
+  // Give the server a sec to start up
+  //await sleep(15000);
+  await waitPort({ port, output: 'silent' })
+
+  const measureUrl = `http://localhost:${port}${path}`;
+
+  console.info(
+    `Getting lighthouse report for ${chalk.green(framework)} ${i + 1} / ${frameworks.length} on ${measureUrl} !`
+  );
+
+  const { report } = await getLighthouseReport(measureUrl, RUNS, { chromeFlags: ['--headless'] });
+  results[framework] = getSimpleReport(report);
+
+
 
   if (process.env.NO_WRITE !== 'true') {
     await Promise.all([

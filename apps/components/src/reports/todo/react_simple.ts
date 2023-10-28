@@ -1,13 +1,15 @@
+
+// Generated from benchmark data
 export default {
-  "jsKb": 159,
-  "totalKb": 171,
+  "jsKb": 158,
+  "totalKb": 170,
   "fcpDisplay": "0.8 s",
-  "fcpNumber": 753.8594,
-  "tbtDisplay": "0 ms",
-  "tbtNumber": 0,
-  "ttiDisplay": "0.8 s",
-  "ttiNumber": 753.8594,
-  "lcpDisplay": "2.2 s",
-  "lcpNumber": 2225.6485000000002,
-  "score": 99
+  "fcpNumber": 754.0009,
+  "tbtDisplay": "1,440 ms",
+  "tbtNumber": 1435.500225,
+  "ttiDisplay": "3.4 s",
+  "ttiNumber": 3376.0024750000002,
+  "lcpDisplay": "3.3 s",
+  "lcpNumber": 3258.50225,
+  "score": 66
 }

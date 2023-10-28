@@ -103,7 +103,7 @@ await killAll(frameworks);
 for (const framework of frameworks) {
   const { process: runningProcess, port } = await preview(framework);
   // Give the server a sec to start up
-  await sleep(5000);
+  await sleep(10000);
 
   const measureUrl = `http://localhost:${port}${path}`;
   await captureTodoReport(measureUrl, framework);

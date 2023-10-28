@@ -22,8 +22,15 @@ async function setupBrowser(n: number, options: chromeLauncher.Options = {}) {
   if (chromeInstances[n]) {
     return;
   }
-  chromeInstances[n] = await chromeLauncher.launch(options);
+
+  console.log('Launching Chrome')
+  chromeInstances[n] = await chromeLauncher.launch({
+    ...options,
+    chromeFlags: ['--headless']
+  });
   ports[n] = chromeInstances[n].port;
+
+  console.log('Ports are: ', ports);
 
   // Connect chrome-launcher to puppeteer
   const { webSocketDebuggerUrl } = (await fetch(
@@ -39,13 +46,18 @@ export async function teardownBrowser() {
   for (const browser of browserInstances) {
     await browser.close();
   }
-  for (const chrome of chromeInstances) {
-    await chrome.kill();
-  }
+  // for (const chrome of chromeInstances) {
+  //   await chrome.kill();
+  // }
   ports = [];
 }
 
 export const DEFAULT_RUNS = 3;
+
+
+function range(n: number) {
+  return Array(n).fill(null).map((_, i) => i + 1);
+}
 
 /**
  * Get a median lighthouse report for a given url
@@ -110,13 +122,16 @@ export async function getSingleLighthouseReport(
   n: number,
   options: chromeLauncher.Options = {}
 ) {
-  await setupBrowser(n);
+  //await setupBrowser(n);
 
   // Run Lighthouse
   const { lhr } = await lighthouse(url, {
     ...options,
-    port: ports[n],
+    port: 9222,
     preset: 'experimental',
+    chromeFlags: ['--headless'],
+    maxWaitForLoad: 60000,
+    maxWaitForFcp: 80000
   });
 
   const lhReport: LH.Result = JSON.parse(

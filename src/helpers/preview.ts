@@ -11,9 +11,8 @@ export async function preview(framework: string) {
 
   const useBun = framework.endsWith('-bun');
 
-  const process = $`cd frameworks/${framework} && ${
-    useBun ? 'bun' : 'npm'
-  } run preview`;
+  const process = $`cd frameworks/${framework} && ${useBun ? 'bun' : 'npm'
+    } run preview`;
 
   return {
     process,

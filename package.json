@@ -33,6 +33,7 @@
     "puppeteer": "^16.1.0",
     "solid-styled-components": "^0.28.4",
     "ts-node": "^10.9.1",
+    "wait-port": "^1.1.0",
     "zx": "^7.0.8"
   },
   "devDependencies": {
